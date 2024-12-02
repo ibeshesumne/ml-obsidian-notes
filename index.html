@@ -25,7 +25,7 @@
       try {
         const response = await fetch(apiUrl, {
           headers: {
-            'Accept': 'application/vnd.github+json'
+            'User-Agent': 'YourAppName/1.0'
           }
         });
         if (!response.ok) throw new Error(`Failed to fetch tree: ${response.statusText}`);
@@ -55,7 +55,7 @@
               const dirUrl = item.url;
               fetch(dirUrl, {
                 headers: {
-                  'Accept': 'application/vnd.github+json'
+                  'User-Agent': 'YourAppName/1.0'
                 }
               })
               .then(response => response.json())
