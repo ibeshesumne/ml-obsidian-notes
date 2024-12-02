@@ -36,6 +36,8 @@
         if (!response.ok) throw new Error(`Failed to fetch tree: ${response.statusText}`);
 
         const data = await response.json();
+        console.log("Fetched data:", data);
+
         const treeContainer = document.getElementById("repo-tree");
 
         function renderTree(items, indent = 0) {
@@ -62,17 +64,20 @@
                 .then(response => response.json())
                 .then(subTreeData => {
                   const subTreeList = document.createElement("ul");
-                  treeContainer.appendChild(subTreeList);
+                  listItem.appendChild(subTreeList);
                   renderTree(subTreeData.tree, indent + 1);
                 })
-                .catch(error => console.error(error));
+                .catch(error => console.error("Error fetching sub-tree:", error));
             }
           });
         }
 
+        // Clear any existing content
+        treeContainer.innerHTML = '';
+
         renderTree(data.tree);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching repository tree:", error);
         document.getElementById("repo-tree").textContent = "Error loading repository tree.";
       }
     }
