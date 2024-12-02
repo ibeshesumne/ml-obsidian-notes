@@ -25,9 +25,9 @@
   <script>
     async function fetchRepoTree() {
       const owner = "Ibeshesumne"; // Replace with your username
-      const repo = "Ibeshesumne.github.io/ml-obsidian-notes"; // Replace with your repository name
+      const repo = "Ibeshesumne.github.io"; // Replace with your repository name
       const branch = "main"; // Replace with the branch name (e.g., main or master)
-      const token = "YOUR_GITHUB_PERSONAL_ACCESS_TOKEN"; // Replace with your GitHub personal access token
+      const token = "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"; // Replace with your GitHub personal access token
 
       const apiUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
 
@@ -50,7 +50,7 @@
           link.href = item.path; // Links to the file or page
           link.textContent = item.path;
           listItem.appendChild(link);
-          listItem.appendChild(document.createTextNode(` - Created: ${fileInfo.created_at}, Size: ${fileInfo.size} bytes`));
+          listItem.appendChild(document.createTextNode(` - Size: ${fileInfo.size} bytes`));
           treeContainer.appendChild(listItem);
         }
       } catch (error) {
@@ -74,3 +74,4 @@
   </script>
 </body>
 </html>
+
