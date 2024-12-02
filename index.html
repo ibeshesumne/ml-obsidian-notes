@@ -43,31 +43,18 @@
         const tree = data.tree.filter(item => item.type === "blob");
         
         const treeContainer = document.getElementById("repo-tree");
-        for (const item of tree) {
-          const fileInfo = await fetchFileInfo(owner, repo, item.sha, token);
+        tree.forEach(item => {
           const listItem = document.createElement("li");
           const link = document.createElement("a");
           link.href = item.path; // Links to the file or page
           link.textContent = item.path;
           listItem.appendChild(link);
-          listItem.appendChild(document.createTextNode(` - Size: ${fileInfo.size} bytes`));
           treeContainer.appendChild(listItem);
-        }
+        });
       } catch (error) {
         console.error(error);
         document.getElementById("repo-tree").textContent = "Error loading repository tree.";
       }
-    }
-
-    async function fetchFileInfo(owner, repo, sha, token) {
-      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/git/blobs/${sha}`;
-      const response = await fetch(apiUrl, {
-        headers: {
-          'Authorization': `token ${token}`
-        }
-      });
-      if (!response.ok) throw new Error(`Failed to fetch file info: ${response.statusText}`);
-      return await response.json();
     }
 
     fetchRepoTree();
