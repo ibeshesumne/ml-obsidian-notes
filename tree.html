@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repository Tree</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    ul { list-style-type: none; padding-left: 1em; }
+    ul li { margin: 0.5em 0; }
+    nav { background-color: #333; overflow: hidden; padding: 10px; }
+    nav a { float: left; display: block; color: white; text-align: center; padding: 14px 20px; text-decoration: none; }
+    nav a:hover { background-color: #ddd; color: black; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="projects.html">Projects</a>
+    <a href="#" style="pointer-events: none; cursor: default;">Tree</a>
+  </nav>
+  <h1>Repository Tree</h1>
+  <ul id="repo-tree"></ul>
+
+  <script>
+    async function fetchRepoTree() {
+      const owner = "Ibeshesumne"; // Replace with your username
+      const repo = "ml-obsidian-notes"; // Replace with your repository name
+      const branch = "main"; // Replace with the branch name
+
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error(`Failed to fetch tree: ${response.statusText}`);
+
+        const data = await response.json();
+        console.log("Fetched data:", data);
+
+        const treeContainer = document.getElementById("repo-tree");
+
+        function renderTree(items, indent = 0) {
+          items.forEach(item => {
+            const listItem = document.createElement("li");
+            const link = document.createElement("a");
+
+            if (item.type === "blob") {
+              // Link to the raw file content
+              link.href = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${item.path}`;
+              link.textContent = item.path;
+            } else if (item.type === "tree") {
+              // For directories, just show the name
+              link.textContent = item.path;
+            }
+
+            listItem.appendChild(link);
+            treeContainer.appendChild(listItem);
+
+            // If the item is a directory, recursively fetch its contents
+            if (item.type === "tree") {
+              const dirUrl = item.url;
+              fetch(dirUrl)
+                .then(response => response.json())
+                .then(subTreeData => {
+                  const subTreeList = document.createElement("ul");
+                  listItem.appendChild(subTreeList);
+                  renderTree(subTreeData.tree, indent + 1);
+                })
+                .catch(error => console.error("Error fetching sub-tree:", error));
+            }
+          });
+        }
+
+        // Clear any existing content
+        treeContainer.innerHTML = '';
+
+        renderTree(data.tree);
+      } catch (error) {
+        console.error("Error fetching repository tree:", error);
+        document.getElementById("repo-tree").textContent = "Error loading repository tree.";
+      }
+    }
+
+    // Fetch the repository tree on page load
+    fetchRepoTree();
+  </script>
+</body>
+</html>
